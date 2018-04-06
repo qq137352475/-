@@ -92,3 +92,16 @@
 			//用户登录时创建此对象
 			//提供用户界面交互GUI
 		};
+		class ID{
+			//负责商品ID的格式在int跟字符串直接互相转换，方便操作
+		class file{
+			//负责文件读写
+		};
+
+从文件中读取的数据用map存储，key值为ID value值为 struct {
+						goods_name	//商品名称 字符串类型
+						goods_brand	//品牌 字符串类型
+						goods_price	//价格 浮点数类型
+						goods_num	//数量 整数	
+						next指针	//在读取 已售清单 时用到，用来插入相同的商品的不同价格
+						}

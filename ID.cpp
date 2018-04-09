@@ -5,7 +5,7 @@ ID::ID(){
 }
 
 ID::ID(int n){
-	sprintf_s(buf, GOODS_ID_LENGTH, "%c%04d", 'F', n);
+	sprintf_s(buf, GOODS_ID_LENGTH, "%c%04d", GOODS_ID_FIRST, n);
 	return;
 }
 

@@ -1,10 +1,21 @@
 #include"project.h"
 
+ifstream& operator >>(ifstream &in, ID &id){
+	in >> id.buf;
+	return in;
+}
+ofstream& operator <<(ofstream&of, ID&id){
+	of << id.buf;
+	return of;
+}
 file::file(char *temp){
 	filename = temp;
 }
 
 bool file::read(database& data){
+	if (&data == false){
+		return false;
+	}
 	ID key;
 	goods_info vaule;
 	char buf[50];
@@ -66,6 +77,8 @@ bool file::write(database& data,char* username){
 	ID key;
 	database::iterator itr;
 
+	if (&data == NULL)
+		return false;
 	
 	if (filename == GOODS_FILE){
 		//库存.txt
@@ -115,5 +128,53 @@ bool file::write(database& data,char* username){
 		}
 	}
 
+	return true;
+}
+
+user_info * file::open_user_list(){
+	if (filename != USER_LIST_FILE){
+		//不正确的文件名
+		return NULL;
+	}
+	ifstream in;
+	in.open(filename, ios::in | ios::_Nocreate);
+	if (!in){
+		//打开失败
+		return NULL;
+	}
+	char buf[50];
+	in.getline(buf, 50);
+	if (in.eof()){
+		return NULL;
+	}
+	user_info * head = new user_info;
+	in >> head->name >> head->password;
+	user_info *temp = head;
+	while (!in.eof()){
+		temp->next = new user_info;
+		temp = temp->next;
+		in >> temp->name >> temp->password;
+
+	}
+	return head;
+}
+
+bool file::write_back_user_list(user_info *temp){
+	//将新用户添加到文件末尾
+	if (filename != USER_LIST_FILE){
+		//不正确的文件名
+		return false;
+	}
+	ofstream of;
+	of.open(filename, ios::out | ios::app);
+	if (!of){
+		//打开失败
+		return false;
+	}
+	if (temp == NULL){
+		//空指针
+		return false;
+	}
+	of << temp->name << '\t' << temp->password << endl;
 	return true;
 }

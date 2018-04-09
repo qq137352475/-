@@ -13,7 +13,9 @@ using namespace std;
 #define SHOPPING_LIST_FILE "data\\已售清单.txt"
 #define USER_LIST_FILE "data\\用户.txt"
 #define GOODS_ID_LENGTH 6
-#define GOODS_ID_FIRST F
+#define GOODS_ID_FIRST 'F'
+#define ADMIN_NAME "admin"
+#define ADMIN_PASSWORD "admin"
 typedef string Name;
 typedef unsigned int Number;
 typedef double Price;
@@ -35,6 +37,12 @@ struct goods_info{
 	Price price;
 	Number num;
 	goods_info * next = NULL;
+};
+
+struct user_info{
+	User_name name;
+	User_password password;
+	user_info* next = NULL;
 };
 
 typedef map<int, goods_info> database;
@@ -59,6 +67,10 @@ public:
 	file(char*);
 	bool read(database&);
 	bool write(database&,char* username = NULL);
+	//以下用来管理用户登录
+	user_info* open_user_list();
+	bool write_back_user_list(user_info *);
+	
 };
 
 class goods{

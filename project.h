@@ -30,6 +30,7 @@ class shopping_cart;
 class Admin;
 class user;
 class ID;
+class file;
 
 struct goods_info{
 	Name name;
@@ -75,15 +76,47 @@ public:
 
 class goods{
 	ID id;
-	Name name;
-	Name brand;
-	Price price;
-	Number num;
-	static database data;//所有的商品信息
+	goods_info info;
+	file f;
+	database data;//所有的商品信息
 
 
 public:
-	void admin_search();
+	goods();
+	ID* get_id();
+	goods_info* get_info();
+	void admin_search(database&);
 };
+class sell_list{
+	ID id;
+	goods_info info;
+	file f;
+	database data;//售货清单
 
+public:
+	sell_list();
+
+};
+class shopping_cart{
+	ID id;
+	goods_info info;
+	file f;
+	User_name username;
+	database data;
+
+public:
+	shopping_cart();
+	shopping_cart(User_name);
+	void chang_user(User_name);
+};
+class Admin{
+	goods m_goods;
+	sell_list m_sell_list;
+	shopping_cart m_shopping_cart;
+public:
+	void search_goods(database&);
+
+public:
+
+};
 #endif

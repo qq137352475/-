@@ -1,120 +1,200 @@
 #include"project.h"
 
 /*
-ä»¥å®ç°åŠŸèƒ½ï¼š
-å°† åº“å­˜ å·²å”®æ¸…å• ä¸­çš„æ•°æ®è¯»å–å¹¶å­˜å…¥ database ä¸­ã€‚
-å°† è´­ç‰©è½¦ä¸­çš„æ•°æ® å­˜å…¥æŒ‡å®šçš„æ–‡ä»¶ä¸­
-å°†ä¿®æ”¹è¿‡çš„ database å­˜å…¥ åº“å­˜.txt
-è¿½åŠ  å·²å”®æ¸…å• ä¸­çš„æ¡ç›®
-ç”¨æˆ·çš„ç™»å½•ä¸æ³¨å†Œ
-ä¸‹ä¸€æ­¥å®ç° ç”¨æˆ·ä¸ç®¡ç†å‘˜å¯¹æ•°æ®çš„æ“ä½œ
+ÒÔÊµÏÖ¹¦ÄÜ£º
+½« ¿â´æ ÒÑÊÛÇåµ¥ ÖĞµÄÊı¾İ¶ÁÈ¡²¢´æÈë database ÖĞ¡£
+½« ¹ºÎï³µÖĞµÄÊı¾İ ´æÈëÖ¸¶¨µÄÎÄ¼şÖĞ
+½«ĞŞ¸Ä¹ıµÄ database ´æÈë ¿â´æ.txt
+×·¼Ó ÒÑÊÛÇåµ¥ ÖĞµÄÌõÄ¿
+ÓÃ»§µÄµÇÂ¼Óë×¢²á
+ÏÂÒ»²½ÊµÏÖ ÓÃ»§Óë¹ÜÀíÔ±¶ÔÊı¾İµÄ²Ù×÷
 */
 
 
 
 int main(){
-	cout << "====================================================================\n";
-	cout << "1ï¼Œç”¨æˆ·ç™»å½• 2ï¼Œç”¨æˆ·æ³¨å†Œ 3ï¼Œç®¡ç†å‘˜ç™»å½•\n";
-	cout << "====================================================================\n";
-	char c;
-	cin >> c;
-	file uifo(USER_LIST_FILE);//å·²ç»å­˜åœ¨çš„ç”¨æˆ·çš„ç”¨æˆ·åï¼Œå¯†ç ç­‰ä¿¡æ¯
-	user_info *head = uifo.open_user_list();
-	if (head == NULL){
-		cout << "æ‰¾ä¸åˆ°ç”¨æˆ·åˆ—è¡¨ä¿¡æ¯ï¼\n";
-	}
-	user_info *temp = head;
-	user_info new_user;//å‡å¦‚éœ€è¦åˆ›å»ºæ–°ç”¨æˆ·ï¼Œä¿¡æ¯ä¿å­˜åœ¨è¿™ä¸ªé‡Œ
-	User_name name;
-	User_password password;
-	switch (c){
-	case '1':
-		if (head == NULL)
-			break;
-		//ç”¨æˆ·ç™»å½•
-		cout << "è¾“å…¥ç”¨æˆ·å\n";
-		cin >> name;
-		cout << "è¾“å…¥å¯†ç \n";
-		cin >> password;
-		for (temp = head; temp != NULL; temp = temp->next){
-			if (temp->name == name){
-				if (temp->password == password){
-					//ç”¨æˆ·åå¯†ç åŒ¹é…
-					//ç™»å½•æˆåŠŸ
-					//åˆ›å»º user å¯¹è±¡ï¼Œä¸ç”¨æˆ·è¿›è¡Œäº¤äº’ï¼Œæš‚æœªå®ç°
-					cout << "ç™»å½•æˆåŠŸï¼\n";
-					break;
-				}
-				else{
-					//ç”¨æˆ·å å¯†ç ä¸åŒ¹é…
-					cout << "å¯†ç è¾“å…¥é”™è¯¯ï¼\n";
-					break;
-				}
-			}
+	bool loop = true;
+	while (loop){
+		cout << "====================================================================\n";
+		cout << "1£¬ÓÃ»§µÇÂ¼ 2£¬ÓÃ»§×¢²á 3£¬¹ÜÀíÔ±µÇÂ¼ #°²È«ÍË³ö\n";
+		cout << "====================================================================\n";
+		char c;
+		cin >> c;
+		file uifo(USER_LIST_FILE);//ÒÑ¾­´æÔÚµÄÓÃ»§µÄÓÃ»§Ãû£¬ÃÜÂëµÈĞÅÏ¢
+		user_info *head = uifo.open_user_list();
+		if (head == NULL){
+			cout << "ÕÒ²»µ½ÓÃ»§ÁĞ±íĞÅÏ¢£¡\n";
 		}
-		if (temp == NULL){
-			//æ‰¾ä¸åˆ°ç”¨æˆ·å
-			cout << "æ‰¾ä¸åˆ°è¯¥ç”¨æˆ·ï¼Œè¯·é‡æ–°è¾“å…¥æˆ–è€…æ³¨å†Œæ–°ç”¨æˆ·ï¼\n";
-		}
-		break;
-	case'2':
-		if (head == NULL)
-			break;
-		//ç”¨æˆ·æ³¨å†Œ
-		cout << "è¾“å…¥ç”¨æˆ·å\n";
-		cin >> name;
-		for (temp = head; temp != NULL; temp = temp->next){
-			if (temp->name == name){
-				//å·²å­˜åœ¨çš„ç”¨æˆ·å
-				cout << "å·²å­˜åœ¨çš„ç”¨æˆ·åï¼Œè¯·é‡æ–°è¾“å…¥æˆ–è€…ç›´æ¥ç™»å½•\n";
+		user_info *temp = head;
+		user_info new_user;//¼ÙÈçĞèÒª´´½¨ĞÂÓÃ»§£¬ĞÅÏ¢±£´æÔÚÕâ¸öÀï
+		User_name name;
+		User_password password;
+		switch (c){
+		case '1':
+			if (head == NULL)
 				break;
-			}
-		}
-		if (temp == NULL){
-			//ä¸å­˜åœ¨çš„ç”¨æˆ·å
-			cout << "è¾“å…¥å¯†ç \n";
+			//ÓÃ»§µÇÂ¼
+			cout << "ÊäÈëÓÃ»§Ãû\n";
+			cin >> name;
+			cout << "ÊäÈëÃÜÂë\n";
 			cin >> password;
-			new_user.name = name;
-			new_user.password = password;
-			uifo.write_back_user_list(&new_user);//å°†æ–°ç”¨æˆ·å†™å›æ–‡ä»¶
-			//åˆ›å»ºæˆåŠŸ
-			//åˆ›å»º user å¯¹è±¡ï¼Œä¸ç”¨æˆ·è¿›è¡Œäº¤äº’ï¼Œæš‚æœªå®ç°
-			cout << "æ³¨å†ŒæˆåŠŸï¼\n";
+			for (temp = head; temp != NULL; temp = temp->next){
+				if (temp->name == name){
+					if (temp->password == password){
+						//ÓÃ»§ÃûÃÜÂëÆ¥Åä
+						//µÇÂ¼³É¹¦
+						//´´½¨ user ¶ÔÏó£¬ÓëÓÃ»§½øĞĞ½»»¥£¬ÔİÎ´ÊµÏÖ
+						cout << "µÇÂ¼³É¹¦£¡\n";
+						bool user_loop = true;
+						while (user_loop){
+							cout << "===============================================================================================\n";
+							cout << "0£¬×¢ÏúµÇÂ¼ 1£¬²é¿´ÉÌÆ· 2£¬ÉÌÆ·ËÑË÷ 3£¬Ìí¼ÓÉÌÆ·ÖÁ¹ºÎï³µ 4£¬É¾³ı¹ºÎï³µÉÌÆ· 5£¬²é¿´¹ºÎï³µ 6£¬½áÕË\n";
+							cout << "===============================================================================================\n";
+							cout << "ÊäÈë²Ù×÷£º\n";
+							cin >> c;
+							switch (c){
+							case'0':
+								user_loop = false;
+								break;
+							case'1':
+
+								break;
+							case'2':
+								break;
+							case'3':
+								break;
+							case'4':
+								break;
+							case'5':
+								break;
+							default:
+								cout << "ÊäÈë´íÎó£¡\n";
+								break;
+							}
+						}
+						break;
+					}
+					else{
+						//ÓÃ»§Ãû ÃÜÂë²»Æ¥Åä
+						cout << "ÃÜÂëÊäÈë´íÎó£¡\n";
+						break;
+					}
+				}
+			}
+			if (temp == NULL){
+				//ÕÒ²»µ½ÓÃ»§Ãû
+				cout << "ÕÒ²»µ½¸ÃÓÃ»§£¬ÇëÖØĞÂÊäÈë»òÕß×¢²áĞÂÓÃ»§£¡\n";
+			}
+			break;
+		case'2':
+			if (head == NULL)
+				break;
+			//ÓÃ»§×¢²á
+			cout << "ÊäÈëÓÃ»§Ãû\n";
+			cin >> name;
+			for (temp = head; temp != NULL; temp = temp->next){
+				if (temp->name == name){
+					//ÒÑ´æÔÚµÄÓÃ»§Ãû
+					cout << "ÒÑ´æÔÚµÄÓÃ»§Ãû£¬ÇëÖØĞÂÊäÈë»òÕßÖ±½ÓµÇÂ¼\n";
+					break;
+				}
+			}
+			if (temp == NULL){
+				//²»´æÔÚµÄÓÃ»§Ãû
+				cout << "ÊäÈëÃÜÂë\n";
+				cin >> password;
+				new_user.name = name;
+				new_user.password = password;
+				uifo.write_back_user_list(&new_user);//½«ĞÂÓÃ»§Ğ´»ØÎÄ¼ş
+				//´´½¨³É¹¦
+				//´´½¨ user ¶ÔÏó£¬ÓëÓÃ»§½øĞĞ½»»¥£¬ÔİÎ´ÊµÏÖ
+				cout << "×¢²á³É¹¦£¡\n";
+			}
+			break;
+		case'3':
+			//¹ÜÀíÔ±µÇÂ¼
+			cout << "ÊäÈë¹ÜÀíÔ±ÕËºÅ\n";
+			cin >> name;
+			cout << "ÇëÊäÈë¹ÜÀíÔ±ÃÜÂë\n";
+			cin >> password;
+			if (name == ADMIN_NAME && password == ADMIN_PASSWORD){
+				//¹ÜÀíÔ±µÇÂ¼³É¹¦
+				//´´½¨¹ÜÀíÔ±¶ÔÏó£¬ÔİÎ´ÊµÏÖ
+				cout << "µÇÂ¼³É¹¦\n";
+				Admin admin;
+				bool admin_loop = true;
+				while (admin_loop){
+					cout << "===========================================================================\n";
+					cout << "0£¬×¢ÏúµÇÂ¼ 1£¬²éÑ¯ÉÌÆ· 2£¬Ôö¼ÓÉÌÆ· 3£¬É¾³ıÉÌÆ· 4£¬ĞŞ¸ÄÉÌÆ·ÊıÁ¿ 5£¬ÊÛ»õÇåµ¥\n";
+					cout << "===========================================================================\n";
+					cout << "ÊäÈë²Ù×÷£º\n";
+					cin >> c;
+					database tempdata;
+					database::iterator itr;
+					switch (c){
+					case'0':
+						admin_loop = false;
+						break;
+					case'1':
+						admin.search_goods(tempdata);
+						for (itr = tempdata.begin(); itr != tempdata.end(); itr++){
+							cout << itr->first << " " << itr->second.name << " " << itr->second.brand << " " << itr->second.price << ' ' << itr->second.num << endl;
+						}
+						break;
+					case'2':
+						break;
+					case'3':
+						break;
+					case'4':
+						break;
+					case'5':
+						break;
+					default:
+						cout << "ÊäÈë´íÎó£¡\n";
+						break;
+					}
+				}
+				
+			}
+			else{
+				cout << "ÕËºÅ»òÕßÃÜÂëÊäÈë´íÎó£¬µÇÂ¼Ê§°Ü£¡\n";
+			}
+			break;
+		case'#':
+			cout << "³É¹¦°²È«ÍË³ö\n";
+			loop = false;
+			break;
+		default:
+			//
+			cout << "ÊäÈë´íÎó£¡\n";
+			break;
 		}
-		break;
-	case'3':
-		//ç®¡ç†å‘˜ç™»å½•
-		break;
-	default:
-		//
-		break;
+
 	}
-
-
-	database data;
+	/*database data;
 	//file f(GOODS_FILE);
 	file f(SHOPPING_LIST_FILE);
 	//f.read(data);
 
 	//file f("data\\user5.txt");
 	goods_info gf;
-	gf.brand = "æµ‹è¯•å“ç‰Œ2";
-	gf.name = "æµ‹è¯•åå­—2";
+	gf.brand = "²âÊÔÆ·ÅÆ2";
+	gf.name = "²âÊÔÃû×Ö2";
 	gf.num = 10;
 	gf.price = 51.1;
 
 	data.insert(pair<int, goods_info>(16, gf));
-	/*
+	
 	if (f.write(data,"user_test")){
-		cout << "æˆåŠŸ" << endl;
+	cout << "³É¹¦" << endl;
 	}
 	else
-		cout << "å¤±è´¥" << endl;
-		*/
+	cout << "Ê§°Ü" << endl;
+	
 	database::iterator itr;
 
-	/*for (itr = data.begin(); itr != data.end(); itr++){
-		cout << itr->first << " " << itr->second.name << " " << itr->second.brand << " " << itr->second.price << ' ' << itr->second.num << endl;
+	for (itr = data.begin(); itr != data.end(); itr++){
+	cout << itr->first << " " << itr->second.name << " " << itr->second.brand << " " << itr->second.price << ' ' << itr->second.num << endl;
 	}*/
 
 

@@ -1,6 +1,15 @@
 #include"project.h"
 
-void Admin::search_goods(database& temp)
+void Admin::search_goods()
 {
-	m_goods.admin_search(temp);
+	m_goods.admin_search(data);
+}
+bool Admin::delete_goods(){
+	return m_goods.admin_delete(id);
+}
+bool Admin::insert_goods(){
+	return m_goods.admin_insert(&info);
+}
+bool Admin::change_goods_number(){
+	return m_goods.admin_change_number(id, num);
 }

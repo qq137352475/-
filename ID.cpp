@@ -16,3 +16,9 @@ ID::operator int(){
 	}
 	return atoi(temp);
 }
+void ID::set(char * temp){
+	for (int i = 0; i < GOODS_ID_LENGTH; i++){
+		buf[i] = temp[i];
+	}
+	temp[GOODS_ID_LENGTH - 1] = '\0';
+}

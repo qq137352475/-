@@ -9,6 +9,7 @@
 using namespace std;
 
 #define DEL_NUM 0xffffffff
+#define MAX_ADD_GODDS_NUM 0xfffffff
 #define GOODS_FILE "data\\库存.txt"
 #define SHOPPING_LIST_FILE "data\\已售清单.txt"
 #define USER_LIST_FILE "data\\用户.txt"
@@ -57,6 +58,7 @@ public:
 	char* get(){
 		return buf;
 	}
+	void set(char *);
 	friend ifstream& operator >>(ifstream&, ID&);
 	friend ofstream& operator <<(ofstream&, ID&);
 };
@@ -86,6 +88,9 @@ public:
 	ID* get_id();
 	goods_info* get_info();
 	void admin_search(database&);
+	bool admin_delete(ID);
+	bool admin_insert(goods_info*);
+	bool admin_change_number(ID,Number);
 };
 class sell_list{
 	ID id;
@@ -114,7 +119,14 @@ class Admin{
 	sell_list m_sell_list;
 	shopping_cart m_shopping_cart;
 public:
-	void search_goods(database&);
+	database data;
+	ID id;
+	goods_info info;
+	Number num;
+	void search_goods();
+	bool delete_goods();
+	bool insert_goods();
+	bool change_goods_number();
 
 public:
 

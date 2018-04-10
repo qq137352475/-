@@ -7,6 +7,9 @@
 将修改过的 database 存入 库存.txt
 追加 已售清单 中的条目
 用户的登录与注册
+管理员对数据的操作
+管理员对售货清单的查询暂未实现
+管理员修改商品信息之后对用户购物车的更新暂未实现
 下一步实现 用户与管理员对数据的操作
 */
 
@@ -14,6 +17,8 @@
 
 int main(){
 	bool loop = true;
+	string str;
+	ID out_id;
 	while (loop){
 		cout << "====================================================================\n";
 		cout << "1，用户登录 2，用户注册 3，管理员登录 #安全退出\n";
@@ -114,12 +119,11 @@ int main(){
 		case'3':
 			//管理员登录
 			cout << "输入管理员账号\n";
-			cin >> name;
+			//cin >> name;
 			cout << "请输入管理员密码\n";
-			cin >> password;
-			if (name == ADMIN_NAME && password == ADMIN_PASSWORD){
+			//cin >> password;
+			if (1||name == ADMIN_NAME && password == ADMIN_PASSWORD){
 				//管理员登录成功
-				//创建管理员对象，暂未实现
 				cout << "登录成功\n";
 				Admin admin;
 				bool admin_loop = true;
@@ -129,23 +133,62 @@ int main(){
 					cout << "===========================================================================\n";
 					cout << "输入操作：\n";
 					cin >> c;
-					database tempdata;
 					database::iterator itr;
 					switch (c){
 					case'0':
 						admin_loop = false;
 						break;
 					case'1':
-						admin.search_goods(tempdata);
-						for (itr = tempdata.begin(); itr != tempdata.end(); itr++){
-							cout << itr->first << " " << itr->second.name << " " << itr->second.brand << " " << itr->second.price << ' ' << itr->second.num << endl;
+						admin.search_goods();
+						for (itr = admin.data.begin(); itr != admin.data.end(); itr++){
+							out_id = itr->first;
+							cout << out_id.get() << " " << itr->second.name << " " << itr->second.brand << " " << itr->second.price << ' ' << itr->second.num << endl;
 						}
 						break;
 					case'2':
+						cout << "输入增加商品的名称 品牌 价格 数量：";
+						cin >> admin.info.name >> admin.info.brand >> admin.info.price >> admin.info.num;
+						if (admin.insert_goods()){
+							cout << "增加成功！\n";
+						}
+						else
+							cout << "增加失败！\n";
 						break;
 					case'3':
+						cout << "输入删除商品的ID：";
+						cin >> str;
+						if (str.length() != 5){
+							cout << "ID 长度不正确，请输入正确的长度\n";
+							break;
+						}
+						if (str.at(0) != GOODS_ID_FIRST){
+							cout << "删除失败！，输入了错误的ID\n";
+							break;
+						}
+						admin.id.set((char*)str.data());
+						if (admin.delete_goods())
+							cout << "删除成功！\n";
+						else
+							cout << "删除失败！，输入了错误的ID\n";
 						break;
 					case'4':
+						cout << "输入修改商品的ID：";
+						cin >> str;
+						cout << "输入修改的数量：";
+						cin >> admin.num;
+						if (str.length() != 5){
+							cout << "ID 长度不正确，请输入正确的长度\n";
+							break;
+						}
+						if (str.at(0) != GOODS_ID_FIRST){
+							cout << "修改失败！，输入了错误的ID\n";
+							break;
+						}
+						admin.id.set((char*)str.data());
+						if (admin.change_goods_number())
+							cout << "修改成功！\n";
+						else
+							cout << "修改失败！，输入了错误的ID\n";
 						break;
 					case'5':
 						break;

@@ -33,10 +33,10 @@ bool shopping_cart::user_add_goods(ID id, Number num,goods_info * info)
 	}
 	f.read(data, username);
 	database::iterator itr;
-	if (data.size() == 0)
-	{
-		return false;
-	}
+	//if (data.size() == 0)
+	//{
+	//	return false;
+	//}
 	for (itr = data.begin(); itr != data.end(); itr++)
 	{
 		//该商品是否已经存在于购物车
@@ -55,6 +55,11 @@ bool shopping_cart::user_add_goods(ID id, Number num,goods_info * info)
 	if (itr == data.end())
 	{
 		//不存在
+		if (info->num <= num)
+		{
+			//数量超过库存
+			return false;
+		}
 		info->num = num;
 		data.insert(pair<int, goods_info>(id, *info));
 	}
@@ -64,8 +69,7 @@ bool shopping_cart::user_add_goods(ID id, Number num,goods_info * info)
 void shopping_cart::overview_shopping_cart(database& temp)
 {
 	//查看购物车
-	f.read(data, username);
-	temp = data;
+	f.read(temp, username);
 }
 
 
@@ -89,10 +93,17 @@ bool shopping_cart::user_sub_num(ID id, Number num)
 		if (itr->first == id)
 		{
 			//存在
-			if (itr->second.num <= num)
+			if (itr->second.num < num)
 			{
 				//数量超过购物车里面的数量
 				return false;
+			}
+			if (itr->second.num == num)
+			{
+				//删除之后数量等于0
+				data.erase(itr->first);
+				f.write(data, username);
+				return true;
 			}
 			itr->second.num -= num;
 			break;
@@ -105,4 +116,8 @@ bool shopping_cart::user_sub_num(ID id, Number num)
 	}
 	f.write(data, username);
 	return true;
+}
+bool shopping_cart::clear()
+{
+	return f.clear_shopping_cart(username);
 }

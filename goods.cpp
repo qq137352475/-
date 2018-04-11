@@ -64,7 +64,7 @@ bool goods::admin_delete(ID id){
 	return true;
 }
 
-bool goods::admin_change_number(ID id,Number num){
+bool goods::admin_change_number(ID id, Number num, goods_change_flag flag){
 	//修改商品数量
 	int temp = id;
 	if (temp == 0){
@@ -78,7 +78,19 @@ bool goods::admin_change_number(ID id,Number num){
 			if (itr->second.num == DEL_NUM)
 				//修改已经被删除商品的数量
 				return false;
-			itr->second.num = num;
+			if (flag == ADD){
+				itr->second.num += num;
+			}
+			else if (flag == SUB && itr->second.num >= num)
+			{
+				itr->second.num -= num;
+			}
+			else if (flag == COVER)
+			{
+				itr->second.num = num;
+			}
+			else
+				return false;
 			break;
 		}
 	}

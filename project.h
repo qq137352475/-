@@ -34,6 +34,8 @@ class user;
 class ID;
 class file;
 
+enum goods_change_flag{ ADD, SUB, COVER };
+
 struct goods_info{
 	Name name;
 	Name brand;
@@ -71,6 +73,7 @@ public:
 	file(char*);
 	bool read(database&, User_name username = " ");
 	bool write(database&,User_name username = " ");
+	bool clear_shopping_cart(User_name);
 	//以下用来管理用户登录
 	user_info* open_user_list();
 	bool write_back_user_list(user_info *);
@@ -91,7 +94,7 @@ public:
 	void admin_search(database&);
 	bool admin_delete(ID);
 	bool admin_insert(goods_info*);
-	bool admin_change_number(ID,Number);
+	bool admin_change_number(ID, Number, goods_change_flag);
 	void user_overview(database&); 
 	bool user_search(Name , database&);
 	bool user_change_number(ID, Number);
@@ -120,6 +123,7 @@ public:
 	bool user_add_goods(ID,Number,goods_info*);
 	void overview_shopping_cart(database&);
 	bool user_sub_num(ID, Number);
+	bool clear();
 };
 class Admin{
 	goods m_goods;
@@ -133,7 +137,7 @@ public:
 	void search_goods();
 	bool delete_goods();
 	bool insert_goods();
-	bool change_goods_number();
+	bool change_goods_number(goods_change_flag);
 	void sell_list_overview();
 
 public:
@@ -150,6 +154,7 @@ public:
 	ID id;
 	goods_info info;
 	Number num;
+	Price price;
 	user(User_name);
 	user();
 	void overview_goods();
@@ -157,5 +162,8 @@ public:
 	bool add_goods_to_shopping_cart();
 	void overview_shopping_cart();
 	bool sub_num_of_shopping_cart();
+	bool checkout();
+	bool payment();
+	bool clear_shopping_cart();
 };
 #endif

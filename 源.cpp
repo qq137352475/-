@@ -16,47 +16,66 @@ tip: 删除已经删除的商品无影响
 修改已删除商品的数量无法操作
 */
 
-
+//enum goods_change_flag{ ADD, SUB, COVER };
 
 int main(){
 	bool loop = true;
+
+	user_info *temp;
+	user_info new_user;//假如需要创建新用户，信息保存在这个里
+	User_name name;
+	User_password password;
+
 	string str;
 	ID out_id;
 	database::iterator itr;
 	goods_info* p_sell_list_temp;
+	bool b_new_user = false;
+	goods_change_flag myflag;
 	while (loop){
-		cout << "====================================================================\n";
-		cout << "1，用户登录 2，用户注册 3，管理员登录 #安全退出\n";
-		cout << "====================================================================\n";
 		char c;
-		cin >> c;
+		if (!b_new_user){
+			cout << "====================================================================\n";
+			cout << "1，用户登录 2，用户注册 3，管理员登录 #安全退出\n";
+			cout << "====================================================================\n";
+			cin >> c;
+		}
+		else
+			c = '1';//新注册的用户直接登录
 		file uifo(USER_LIST_FILE);//已经存在的用户的用户名，密码等信息
 		user_info *head = uifo.open_user_list();
 		if (head == NULL){
 			cout << "找不到用户列表信息！\n";
 		}
-		user_info *temp = head;
-		user_info new_user;//假如需要创建新用户，信息保存在这个里
-		User_name name;
-		User_password password;
 		switch (c){
 		case '1':
 			if (head == NULL)
 				break;
 			//用户登录
-			cout << "输入用户名\n";
-			cin >> name;
-			cout << "输入密码\n";
-			cin >> password;
+			if (!b_new_user)
+			{
+				cout << "输入用户名\n";
+				cin >> name;
+				cout << "输入密码\n";
+				cin >> password;
+			}
+
 			for (temp = head; temp != NULL; temp = temp->next){
 				if (temp->name == name){
-					if (temp->password == password){
+					if (b_new_user || temp->password == password){
 						//用户名密码匹配
 						//登录成功
 						//创建 user 对象，与用户进行交互，暂未实现
 						cout << "登录成功！\n";
 						bool user_loop = true;
 						user me(name);
+						if (b_new_user)
+						{
+							//新用户
+							//创建购物车文件
+							me.clear_shopping_cart();
+							b_new_user = false;
+						}
 						while (user_loop){
 							cout << "===============================================================================================\n";
 							cout << "0，注销登录 1，查看商品 2，商品搜索 3，添加商品至购物车 4，删除购物车商品 5，查看购物车 6，结账\n";
@@ -135,9 +154,45 @@ int main(){
 								break;
 							case'5':
 								me.overview_shopping_cart();
+								if (me.data.size() == 0)
+								{
+									cout << "购物车为空！\n";
+									break;
+								}
 								for (itr = me.data.begin(); itr != me.data.end(); itr++){
 									out_id = itr->first;
 									cout << out_id.get() << " " << itr->second.name << " " << itr->second.brand << " " << itr->second.price << ' ' << itr->second.num << endl;
+								}
+								break;
+							case'6':
+								if (!me.checkout())
+								{
+									if (me.data.size() == 0)
+									{
+										cout << "购物车为空！\n";
+										break;
+									}
+									cout << "结账失败，购物车中存在被删除的商品或者商品数量大于库存！\n";
+									break;
+								}
+								for (itr = me.data.begin(); itr != me.data.end(); itr++){
+									out_id = itr->first;
+									cout << out_id.get() << " " << itr->second.name << " " << itr->second.brand << " " << itr->second.price << ' ' << itr->second.num << endl;
+								}
+								cout << "总价格为：" << me.price << "\n是否结账(Y/N)：";
+								cin >> c;
+								switch(c){
+								case'Y':
+									if (me.payment())
+										cout << "结账成功！\n";
+									else
+										cout << "结账失败！\n";
+									break;
+								case'N':
+									cout << "取消结账！\n";
+									break;
+								default:
+									cout << "输入错误！\n";
 								}
 								break;
 							default:
@@ -182,6 +237,7 @@ int main(){
 				//创建成功
 				//创建 user 对象，与用户进行交互，暂未实现
 				cout << "注册成功！\n";
+				b_new_user = true;
 			}
 			break;
 		case'3':
@@ -239,6 +295,21 @@ int main(){
 							cout << "删除失败！，输入了错误的ID\n";
 						break;
 					case'4':
+						cout << "===================================================\n";
+						cout << "0，增加商品数量 1，减少商品数量 2，直接修改商品数量\n";
+						cout << "===================================================\n";
+						cin >> c;
+						if (c == '0')
+							myflag = ADD;
+						else if (c == '1')
+							myflag = SUB;
+						else if (c == '2')
+							myflag = COVER;
+						else
+						{
+							cout << "错误的输入！\n";
+							break;
+						}
 						cout << "输入修改商品的ID：";
 						cin >> str;
 						cout << "输入修改的数量：";
@@ -248,14 +319,14 @@ int main(){
 							break;
 						}
 						if (str.at(0) != GOODS_ID_FIRST){
-							cout << "修改失败！，输入了错误的ID\n";
+							cout << "修改失败！，输入了错误的数量或ID\n";
 							break;
 						}
 						admin.id.set((char*)str.data());
-						if (admin.change_goods_number())
+						if (admin.change_goods_number(myflag))
 							cout << "修改成功！\n";
 						else
-							cout << "修改失败！，输入了错误的ID\n";
+							cout << "修改失败！，输入了错误的数量或ID\n";
 						break;
 					case'5':
 						admin.sell_list_overview();

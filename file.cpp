@@ -16,6 +16,7 @@ bool file::read(database& data, User_name username){
 	if (&data == false){
 		return false;
 	}
+	data.clear();
 	ID key;
 	goods_info vaule;
 	char buf[50];
@@ -31,6 +32,12 @@ bool file::read(database& data, User_name username){
 		while (!in.eof()){
 			//读取数据，存入map
 			in >> key >> vaule.name >> vaule.brand >> vaule.price >> vaule.num;
+			if (key == 0){
+				if (0 != strcmp("F0000", key.get())){
+					//错误的ID
+					continue;
+				}
+			}
 			data.insert(pair<int, goods_info>(key, vaule));
 		}
 	}
@@ -79,6 +86,12 @@ bool file::read(database& data, User_name username){
 		while (!in.eof()){
 			//读取数据，存入map
 			in >> key >> vaule.name >> vaule.brand >> vaule.price >> vaule.num;
+			if (key == 0){
+				if (0 != strcmp("F0000", key.get())){
+					//错误的ID
+					continue;
+				}
+			}
 			data.insert(pair<int, goods_info>(key, vaule));
 		}
 	}
@@ -89,7 +102,7 @@ bool file::write(database& data,User_name username){
 	ID key;
 	database::iterator itr;
 
-	if (&data == NULL)
+	if (data.size() == 0)
 		return false;
 	
 	if (0 == strcmp(filename, GOODS_FILE)){
@@ -192,5 +205,18 @@ bool file::write_back_user_list(user_info *temp){
 		return false;
 	}
 	of << temp->name << '\t' << temp->password << endl;
+	return true;
+}
+bool file::clear_shopping_cart(User_name username)
+{
+	username = "data\\" + username + ".txt";
+	if (0 != strcmp(filename, username.data())){
+		return false;
+	}
+	ofstream of(filename, ios::out);
+	if (!of){
+		return false;
+	}
+	of << "ID\t名称\t品牌\t价格\t数量\n";
 	return true;
 }

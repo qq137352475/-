@@ -10,7 +10,10 @@
 管理员对数据的操作
 管理员对售货清单的查询暂未实现
 管理员修改商品信息之后对用户购物车的更新暂未实现
-下一步实现 用户与管理员对数据的操作
+用户结算 购物车暂未 实现
+注册新用户功能暂未实现
+tip: 删除已经删除的商品无影响
+修改已删除商品的数量无法操作
 */
 
 
@@ -19,6 +22,8 @@ int main(){
 	bool loop = true;
 	string str;
 	ID out_id;
+	database::iterator itr;
+	goods_info* p_sell_list_temp;
 	while (loop){
 		cout << "====================================================================\n";
 		cout << "1，用户登录 2，用户注册 3，管理员登录 #安全退出\n";
@@ -51,6 +56,7 @@ int main(){
 						//创建 user 对象，与用户进行交互，暂未实现
 						cout << "登录成功！\n";
 						bool user_loop = true;
+						user me(name);
 						while (user_loop){
 							cout << "===============================================================================================\n";
 							cout << "0，注销登录 1，查看商品 2，商品搜索 3，添加商品至购物车 4，删除购物车商品 5，查看购物车 6，结账\n";
@@ -62,15 +68,77 @@ int main(){
 								user_loop = false;
 								break;
 							case'1':
-
+								me.overview_goods();
+								for (itr = me.data.begin(); itr != me.data.end(); itr++){
+									out_id = itr->first;
+									cout << out_id.get() << " " << itr->second.name << " " << itr->second.brand << " " << itr->second.price << ' ' << itr->second.num << endl;
+								}
 								break;
 							case'2':
+								cout << "输入需要搜索的商品的名称：\n";
+								cin >> me.name;
+								if (!me.search_goods()){
+									//找不到这在商品
+									cout << "输入了错误的商品名称！\n";
+									break;
+								}
+								for (itr = me.data.begin(); itr != me.data.end(); itr++){
+									out_id = itr->first;
+									cout << out_id.get() << " " << itr->second.name << " " << itr->second.brand << " " << itr->second.price << ' ' << itr->second.num << endl;
+								}
 								break;
 							case'3':
+								cout << "输入商品ID：\n";
+								cin >> str;
+								cout << "输入数量：\n";
+								cin >> me.num;
+								if (str.length() != 5){
+									cout << "ID 长度不正确，请输入正确的长度\n";
+									break;
+								}
+								if (str.at(0) != GOODS_ID_FIRST){
+									cout << "添加失败！，输入了错误的ID\n";
+									break;
+								}
+								me.id.set((char*)str.data());
+								if (me.add_goods_to_shopping_cart())
+								{
+									cout << "添加成功！\n";
+								}
+								else
+								{
+									cout << "添加失败！，商品ID不存在或者输入的数量超过了库存数目！\n";
+								}
 								break;
 							case'4':
+								cout << "输入商品ID：\n";
+								cin >> str;
+								cout << "输入数量：\n";
+								cin >> me.num;
+								if (str.length() != 5){
+									cout << "ID 长度不正确，请输入正确的长度\n";
+									break;
+								}
+								if (str.at(0) != GOODS_ID_FIRST){
+									cout << "删除失败！，输入了错误的ID\n";
+									break;
+								}
+								me.id.set((char*)str.data());
+								if (me.sub_num_of_shopping_cart())
+								{
+									cout << "删除成功！\n";
+								}
+								else
+								{
+									cout << "删除失败！，商品ID不存在或者输入的数量超过了购物车物品数目！\n";
+								}
 								break;
 							case'5':
+								me.overview_shopping_cart();
+								for (itr = me.data.begin(); itr != me.data.end(); itr++){
+									out_id = itr->first;
+									cout << out_id.get() << " " << itr->second.name << " " << itr->second.brand << " " << itr->second.price << ' ' << itr->second.num << endl;
+								}
 								break;
 							default:
 								cout << "输入错误！\n";
@@ -133,7 +201,6 @@ int main(){
 					cout << "===========================================================================\n";
 					cout << "输入操作：\n";
 					cin >> c;
-					database::iterator itr;
 					switch (c){
 					case'0':
 						admin_loop = false;
@@ -191,6 +258,14 @@ int main(){
 							cout << "修改失败！，输入了错误的ID\n";
 						break;
 					case'5':
+						admin.sell_list_overview();
+						for (itr = admin.data.begin(); itr != admin.data.end(); itr++){
+							out_id = itr->first;
+							cout << out_id.get() << " " << itr->second.name << " " << itr->second.brand << " " << itr->second.price << ' ' << itr->second.num << endl;
+							for (p_sell_list_temp = itr->second.next; p_sell_list_temp != NULL; p_sell_list_temp = p_sell_list_temp->next){
+								cout << out_id.get() << " " << p_sell_list_temp->name << " " << p_sell_list_temp->brand << " " << p_sell_list_temp->price << ' ' << p_sell_list_temp->num << endl;
+							}
+						}
 						break;
 					default:
 						cout << "输入错误！\n";

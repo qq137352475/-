@@ -10,14 +10,21 @@ ID::ID(int n){
 }
 
 ID::operator int(){
+	if (strlen(buf) != GOODS_ID_LENGTH - 1)
+	{
+		return 0;
+	}
 	char temp[GOODS_ID_LENGTH - 1];
 	for (int i = 0; i < GOODS_ID_LENGTH - 1; i++){
 		temp[i] = buf[i + 1];
 	}
-	return atoi(temp);
+	int n = atoi(temp);
+	return n;
 }
-void ID::set(char * temp){
-	for (int i = 0; i < GOODS_ID_LENGTH; i++){
+void ID::set(char * temp)
+{
+	for (int i = 0; i < GOODS_ID_LENGTH; i++)
+	{
 		buf[i] = temp[i];
 	}
 	temp[GOODS_ID_LENGTH - 1] = '\0';

@@ -10,6 +10,7 @@ using namespace std;
 
 #define DEL_NUM 0xffffffff
 #define MAX_ADD_GODDS_NUM 0xfffffff
+#define FILE_NAME_MAX_LEN 100
 #define GOODS_FILE "data\\库存.txt"
 #define SHOPPING_LIST_FILE "data\\已售清单.txt"
 #define USER_LIST_FILE "data\\用户.txt"
@@ -64,12 +65,12 @@ public:
 };
 
 class file{
-	char* filename;
+	char filename[FILE_NAME_MAX_LEN];
 public:
 	file(){ return; }
 	file(char*);
-	bool read(database&);
-	bool write(database&,char* username = NULL);
+	bool read(database&, User_name username = " ");
+	bool write(database&,User_name username = " ");
 	//以下用来管理用户登录
 	user_info* open_user_list();
 	bool write_back_user_list(user_info *);
@@ -91,20 +92,23 @@ public:
 	bool admin_delete(ID);
 	bool admin_insert(goods_info*);
 	bool admin_change_number(ID,Number);
+	void user_overview(database&); 
+	bool user_search(Name , database&);
+	bool user_change_number(ID, Number);
 };
 class sell_list{
-	ID id;
-	goods_info info;
 	file f;
+	Price price;
+	goods_info info;
 	database data;//售货清单
 
 public:
 	sell_list();
+	void admin_overview(database&);
+	void user_insert(database&, User_name);
 
 };
 class shopping_cart{
-	ID id;
-	goods_info info;
 	file f;
 	User_name username;
 	database data;
@@ -112,7 +116,10 @@ class shopping_cart{
 public:
 	shopping_cart();
 	shopping_cart(User_name);
-	void chang_user(User_name);
+	//void chang_user(User_name);
+	bool user_add_goods(ID,Number,goods_info*);
+	void overview_shopping_cart(database&);
+	bool user_sub_num(ID, Number);
 };
 class Admin{
 	goods m_goods;
@@ -127,8 +134,28 @@ public:
 	bool delete_goods();
 	bool insert_goods();
 	bool change_goods_number();
+	void sell_list_overview();
 
 public:
 
+};
+class user{
+	goods m_goods;
+	sell_list m_sell_list;
+	shopping_cart m_shopping_cart;
+public:
+	User_name username;
+	Name name;//商品名称
+	database data;
+	ID id;
+	goods_info info;
+	Number num;
+	user(User_name);
+	user();
+	void overview_goods();
+	bool search_goods();
+	bool add_goods_to_shopping_cart();
+	void overview_shopping_cart();
+	bool sub_num_of_shopping_cart();
 };
 #endif

@@ -9,10 +9,10 @@ ofstream& operator <<(ofstream&of, ID&id){
 	return of;
 }
 file::file(char *temp){
-	filename = temp;
+	strncpy_s(filename, temp, FILENAME_MAX);
 }
 
-bool file::read(database& data){
+bool file::read(database& data, User_name username){
 	if (&data == false){
 		return false;
 	}
@@ -25,7 +25,7 @@ bool file::read(database& data){
 		return false;
 	}
 
-	if (filename == GOODS_FILE){
+	if (0 == strcmp(filename, GOODS_FILE)){
 		//库存.txt
 		in.getline(buf, 50);
 		while (!in.eof()){
@@ -34,20 +34,27 @@ bool file::read(database& data){
 			data.insert(pair<int, goods_info>(key, vaule));
 		}
 	}
-	else if (filename == SHOPPING_LIST_FILE){
+	else if (0 == strcmp(filename, SHOPPING_LIST_FILE)){
 		//已售清单.txt
 		in.getline(buf, 50);
 		while (!in.eof()){
 			//读取到同一个ID的商品时，如果两个数据的价格相同，则合并
 			//如果不一样，则用next指针指向这个数据
 			in >> key >> vaule.name >> vaule.brand >> vaule.price >> vaule.num >> buf;
+			if (key == 0){
+				if (0 != strcmp("F0000", key.get()) ){
+					//错误的ID
+					continue;
+				}
+			}
 			if (!(data.insert(pair<int, goods_info>(key, vaule))).second){
 				//插入不成功，说明存在ID一样的商品
 				goods_info* p, *temp = new goods_info;
 				temp->brand = vaule.brand;
 				temp->name = vaule.name;
 				temp->num = vaule.num;
-				temp->name = vaule.name;
+				temp->price = vaule.price;
+				int fff = key;
 				p = &data[key];
 				while (p->next != NULL){
 					p = p->next;
@@ -56,13 +63,18 @@ bool file::read(database& data){
 			}
 		}
 	}
-	else if (filename == USER_LIST_FILE){
+	else if (0 == strcmp(filename, USER_LIST_FILE)){
 		//用户.txt
 		//文件结构不同，在另一个函数实现
 	}
 	else
 	{
 		//以用户名命名的购物车文件
+		username = "data\\" + username + ".txt";
+		if (0 != strcmp(filename, username.data()))
+		{
+			return false;
+		}
 		in.getline(buf, 50);
 		while (!in.eof()){
 			//读取数据，存入map
@@ -73,14 +85,14 @@ bool file::read(database& data){
 	return true;
 }
 
-bool file::write(database& data,char* username){
+bool file::write(database& data,User_name username){
 	ID key;
 	database::iterator itr;
 
 	if (&data == NULL)
 		return false;
 	
-	if (filename == GOODS_FILE){
+	if (0 == strcmp(filename, GOODS_FILE)){
 		//库存.txt
 		ofstream of(filename, ios::out);
 		if (!of){
@@ -92,11 +104,11 @@ bool file::write(database& data,char* username){
 			of << key << '\t' << itr->second.name << "\t" << itr->second.brand << "\t" << itr->second.price << '\t' << itr->second.num << endl;
 		}
 	}
-	else if (filename == SHOPPING_LIST_FILE){
+	else if (0 ==strcmp(filename, SHOPPING_LIST_FILE)){
 		//已售清单
 		//已追加的方式打开文件
 		ofstream of(filename, ios::out|ios::app);
-		if (!of || username == NULL){
+		if (!of || username == " "){
 			return false;
 		}
 		//of << "ID\t名称\t品牌\t价格\t数量\n";
@@ -106,12 +118,16 @@ bool file::write(database& data,char* username){
 			of << key << '\t' << itr->second.name << "\t" << itr->second.brand << "\t" << itr->second.price << '\t' << itr->second.num << '\t' << username << endl;
 		}
 	}
-	else if (filename == USER_LIST_FILE){
+	else if(0 ==strcmp(filename, USER_LIST_FILE)){
 		//将在另一个函数中实现
 		return false;
 	}
 	else{
 		//已用户名命名的购物车文件
+		username = "data\\" + username + ".txt";
+		if (0 != strcmp(filename, username.data())){
+			return false;
+		}
 		ofstream of(filename, ios::out);
 		if (!of){
 			return false;
@@ -132,7 +148,7 @@ bool file::write(database& data,char* username){
 }
 
 user_info * file::open_user_list(){
-	if (filename != USER_LIST_FILE){
+	if (0 != strcmp(filename,USER_LIST_FILE)){
 		//不正确的文件名
 		return NULL;
 	}
@@ -161,7 +177,7 @@ user_info * file::open_user_list(){
 
 bool file::write_back_user_list(user_info *temp){
 	//将新用户添加到文件末尾
-	if (filename != USER_LIST_FILE){
+	if (0 != strcmp(filename, USER_LIST_FILE)){
 		//不正确的文件名
 		return false;
 	}

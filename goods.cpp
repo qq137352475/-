@@ -19,6 +19,19 @@ void goods::admin_search(database& temp){
 	}
 
 }
+void goods::user_overview(database & temp)
+{
+	//用户查看商品
+	//找出所有数量大于0并且没有被删除的商品
+	temp.clear();
+	database::iterator itr;
+	for (itr = data.begin(); itr != data.end(); itr++){
+		if (itr->second.num != DEL_NUM && itr->second.num > 0){
+			//符合条件的商品
+			temp.insert(pair<int, goods_info>(itr->first, itr->second));
+		}
+	}
+}
 ID* goods::get_id(){
 	return &id;
 }
@@ -32,7 +45,7 @@ bool goods::admin_delete(ID id){
 	//写回文件
 	int temp = id;
 	if (temp == 0){
-		if(strcmp("F0000", id.get()))
+		if(0 != strcmp("F0000", id.get()))
 			return false;
 	}
 	database::iterator itr;
@@ -55,13 +68,16 @@ bool goods::admin_change_number(ID id,Number num){
 	//修改商品数量
 	int temp = id;
 	if (temp == 0){
-		if (strcmp("F0000", id.get()))
+		if (0 != strcmp("F0000", id.get()))
 			return false;
 	}
 	database::iterator itr;
 	for (itr = data.begin(); itr != data.end(); itr++){
 		//temp = itr->first;
 		if (itr->first == temp){
+			if (itr->second.num == DEL_NUM)
+				//修改已经被删除商品的数量
+				return false;
 			itr->second.num = num;
 			break;
 		}
@@ -110,6 +126,48 @@ bool goods::admin_insert(goods_info* gd_info){
 	if (itr == data.end()){
 		//增加全新的商品
 		data.insert(pair<int, goods_info>(temp, info));
+	}
+	f.write(data);
+	return true;
+}
+bool goods::user_search(Name name, database &temp_data)
+{
+	//通过商品名称查找商品
+	//找出所有数量大于0并且没有删除的 商品名字等于给定名字 的商品
+	temp_data.clear();
+	database::iterator itr;
+	for (itr = data.begin(); itr != data.end(); itr++)
+	{
+		if (itr->second.name == name&&itr->second.num != 0 && itr->second.num != DEL_NUM){
+			temp_data.insert(pair < int, goods_info>(itr->first,itr->second));
+		}
+	}
+	if (temp_data.size() == 0)
+		return false;
+	return true;
+}
+bool goods::user_change_number(ID id, Number num){
+	//购物车结账
+	//减少 ID 为 id 的 商品 num 个
+	int temp = id;
+	if (temp == 0){
+		if (0 != strcmp("F0000", id.get() ))
+			return false;
+	}
+	database::iterator itr;
+	for (itr = data.begin(); itr != data.end(); itr++){
+		//temp = itr->first;
+		if (itr->first == temp){
+			if (itr->second.num == DEL_NUM||itr->second.num < num)
+				//修改已经被删除商品的数量 或者 减少的数量大于原来的数量
+				return false;
+			itr->second.num -= num;
+			break;
+		}
+	}
+	if (itr == data.end()){
+		//错误的ID
+		return false;
 	}
 	f.write(data);
 	return true;

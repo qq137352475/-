@@ -13,3 +13,7 @@ bool Admin::insert_goods(){
 bool Admin::change_goods_number(){
 	return m_goods.admin_change_number(id, num);
 }
+void Admin::sell_list_overview(){
+	m_sell_list.admin_overview(data);
+	return;
+}
